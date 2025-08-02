@@ -1,0 +1,35 @@
+// Bootstrap variable overrides with static color values
+$primary: #00347d;
+$secondary: #6c757d;
+$success: #198754;
+$info: #0dcaf0;
+$warning: #ffc107;
+$danger: #dc3545;
+$light: #f8f9fa;
+$dark: #212529;
+
+// Custom variables
+$sidebar-width: 250px;
+$sidebar-collapsed-width: 60px;
+$topbar-height: 60px;
+$transition-duration: 0.3s;
+
+// Breakpoints
+$mobile-breakpoint: 768px;
+$tablet-breakpoint: 992px;
+
+// CSS Custom Properties for runtime theme changes
+:root {
+  --primary-color: #{$primary};
+  --secondary-color: #{$secondary};
+  --success-color: #{$success};
+  --info-color: #{$info};
+  --warning-color: #{$warning};
+  --danger-color: #{$danger};
+  --light-color: #{$light};
+  --dark-color: #{$dark};
+  --sidebar-bg: #2c3e50;
+  --sidebar-hover: #b89a2f;
+  --topbar-bg: #ffffff;
+  --logo-color: #{$primary};
+}
