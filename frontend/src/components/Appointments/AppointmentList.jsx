@@ -14,6 +14,7 @@ const TABS = [
 ];
 export const AppointmentList = ({ onAddToPatients }) => {
     const [activeTab, setActiveTab] = useState('all');
+const [editingAppointment, setEditingAppointment] = useState(null);
 
   const [appointments, setAppointments] = useState([]);
 
@@ -67,16 +68,24 @@ export const AppointmentList = ({ onAddToPatients }) => {
     return `badge ${statusClasses[status] || 'bg-secondary'}`;
   };
 
-  const handleAddAppointment = (newAppointment) => {
+const handleAddAppointment = (savedAppointment) => {
+  if (editingAppointment) {
+    setAppointments(prev =>
+      prev.map(apt => apt.id === savedAppointment.id ? savedAppointment : apt)
+    );
+    setEditingAppointment(null);
+  } else {
     const appointment = {
-      ...newAppointment,
-      id: appointments.length + 1,
+      ...savedAppointment,
+      id: savedAppointment.id || appointments.length + 1,
       status: 'pending',
       isPatient: false
     };
     setAppointments([...appointments, appointment]);
-    setShowAddModal(false);
-  };
+  }
+  setShowAddModal(false);
+};
+
 
   const handleDeleteAppointment = async (id) => {
     if (window.confirm('Are you sure you want to delete this appointment?')) {
@@ -524,9 +533,16 @@ export const AppointmentList = ({ onAddToPatients }) => {
                         <button className="btn btn-sm btn-outline-info me-1" title="View Details">
                           <Eye size={14} />
                         </button>
-                        <button className="btn btn-sm btn-outline-primary me-1" title="Edit">
-                          <Edit size={14} />
-                        </button>
+                       <button
+  className="btn btn-sm btn-outline-primary me-1"
+  title="Edit"
+  onClick={() => {
+    setEditingAppointment(appointment);
+    setShowAddModal(true);
+  }}
+>
+  <Edit size={14} />
+</button>
                         <button 
                           className="btn btn-sm btn-outline-danger"
                           onClick={() => handleDeleteAppointment(appointment.id)}
@@ -546,10 +562,14 @@ export const AppointmentList = ({ onAddToPatients }) => {
 
       {/* Add Appointment Modal */}
       {showAddModal && (
-        <AddAppointmentModal
-          onClose={() => setShowAddModal(false)}
-          onSave={handleAddAppointment}
-        />
+       <AddAppointmentModal
+  onClose={() => {
+    setShowAddModal(false);
+    setEditingAppointment(null);
+  }}
+  onSave={handleAddAppointment}
+  defaultValues={editingAppointment}
+/>
       )}
     </div>
   );
