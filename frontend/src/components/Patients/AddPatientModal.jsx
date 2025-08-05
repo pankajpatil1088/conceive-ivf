@@ -124,7 +124,7 @@ export const AddPatientModal = ({ onClose, onSave }) => {
     </h6>
     
     <div className="row">
-      <div className="col-md-6 mb-3">
+      <div className="col-md-4 mb-3">
         <label className="form-label">First Name *</label>
         <input
           type="text"
@@ -135,7 +135,18 @@ export const AddPatientModal = ({ onClose, onSave }) => {
           required
         />
       </div>
-      <div className="col-md-6 mb-3">
+      <div className="col-md-4 mb-3">
+        <label className="form-label">Middle Name *</label>
+        <input
+          type="text"
+          className="form-control"
+          name="middleName"
+          value={formData.middleName}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <div className="col-md-4 mb-3">
         <label className="form-label">Last Name *</label>
         <input
           type="text"
@@ -160,6 +171,17 @@ export const AddPatientModal = ({ onClose, onSave }) => {
           required
         />
       </div>
+         <div className="col-md-4 mb-3">
+        <label className="form-label">Age *</label>
+        <input
+          type="text"
+          className="form-control"
+          name="age"
+          value={formData.age}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
       <div className="col-md-4 mb-3">
         <label className="form-label">Gender *</label>
         <select
@@ -173,6 +195,38 @@ export const AddPatientModal = ({ onClose, onSave }) => {
           <option value="female">Female</option>
           <option value="male">Male</option>
           <option value="other">Other</option>
+        </select>
+      </div>
+      <div className="col-md-4 mb-3">
+        <label className="form-label">Marital Status *</label>
+        <select
+          className="form-select"
+          name="maritalStatus"
+          value={formData.maritalStatus}
+          onChange={handleInputChange}
+          required
+        >
+          <option value="">Select Marital Status</option>
+          <option value="single">Single</option>
+          <option value="married">Married</option>
+          <option value="divorced">Divorced</option>
+          <option value="widowed">Widowed</option>
+        </select>
+      </div>
+      <div className="col-md-4 mb-3">
+        <label className="form-label">Patient Type *</label>
+        <select
+          className="form-select"
+          name="patientType"
+          value={formData.patientType}
+          onChange={handleInputChange}
+          required
+        >
+          <option value="">Select Patient Type</option>
+          <option value="Normal">Normal</option>
+          <option value="Package">Package</option>
+          <option value="VIP">VIP</option>
+          <option value="Credit">Credit</option>
         </select>
       </div>
       <div className="col-md-4 mb-3">
@@ -194,10 +248,36 @@ export const AddPatientModal = ({ onClose, onSave }) => {
           <option value="O-">O-</option>
         </select>
       </div>
-    </div>
 
-    <div className="row">
-      <div className="col-md-6 mb-3">
+       <div className="col-md-4 mb-3">
+        <label className="form-label">
+          <Phone size={16} className="me-1" />
+          Phone Number*
+        </label>
+        <input
+          type="tel"
+          className="form-control"
+          name="phone"
+          value={formData.phone}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+       <div className="col-md-4 mb-3">
+        <label className="form-label">
+          <Phone size={16} className="me-1" />
+          Alternate Phone Number*
+        </label>
+        <input
+          type="tel"
+          className="form-control"
+          name="altphone"
+          value={formData.altphone}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <div className="col-md-4 mb-3">
         <label className="form-label">
           <Mail size={16} className="me-1" />
           Email *
@@ -211,18 +291,74 @@ export const AddPatientModal = ({ onClose, onSave }) => {
           required
         />
       </div>
-      <div className="col-md-6 mb-3">
-        <label className="form-label">
-          <Phone size={16} className="me-1" />
-          Phone *
-        </label>
+    </div>
+
+    <div className="row">
+      
+      <div className="col-md-4 mb-3">
+        
+          <label className="form-label"> Adhaar Number*</label>
         <input
           type="tel"
           className="form-control"
-          name="phone"
-          value={formData.phone}
+          name="adhaar"
+          value={formData.adhaar}
           onChange={handleInputChange}
           required
+        />
+      </div>
+        <div className="col-md-4 mb-3">
+      <label className="form-label">  PAN Number*</label>
+
+        <input
+          type="tel"
+          className="form-control"
+          name="pan"
+          value={formData.pan}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+<div className="col-md-4 mb-3">
+        <label className="form-label">
+          
+          Refering Unit *
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          name="referingunit"
+          value={formData.referingunit}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+    </div>
+
+      <div className="row">
+      
+      <div className="col-md-4 mb-3">
+        
+          <label className="form-label"> Occupation</label>
+        <input
+          type="tel"
+          className="form-control"
+          name="occupation"
+          value={formData.occupation}
+          onChange={handleInputChange}
+          
+        />
+      </div>
+        <div className="col-md-4 mb-3">
+      <label className="form-label">  Anniversary Date</label>
+
+        <input
+          type="date"
+          className="form-control"
+          name="anniversarydate"  
+          value={formData.anniversarydate}
+          onChange={handleInputChange}
+          
         />
       </div>
     </div>
@@ -252,6 +388,16 @@ export const AddPatientModal = ({ onClose, onSave }) => {
           onChange={handleInputChange}
         />
       </div>
+        <div className="col-md-4 mb-3">
+        <label className="form-label">District</label>
+        <input
+          type="text"
+          className="form-control"
+          name="district"
+          value={formData.district}
+          onChange={handleInputChange}
+        />
+      </div>
       <div className="col-md-4 mb-3">
         <label className="form-label">State</label>
         <input
@@ -272,6 +418,33 @@ export const AddPatientModal = ({ onClose, onSave }) => {
           onChange={handleInputChange}
         />
       </div>
+      <div className="col-md-4 mb-3">
+  <label className="form-label">Status</label>
+  <div>
+    <label className="form-check-label ">
+      <input
+        type="radio"
+        className="form-check-input me-3"
+        name="status"
+        value="Active"
+        checked={formData.status === "Active"}
+        onChange={handleInputChange}
+      />
+      Active
+    </label>
+    <label className="form-check-label ms-3">
+      <input
+        type="radio"
+        className="form-check-input me-3"
+        name="status"
+        value="Inactive"
+        checked={formData.status === "Inactive"}
+        onChange={handleInputChange}
+      />
+      Inactive
+    </label>
+  </div>
+</div>
     </div>
 
     {/* Continue adding your Medical Info, Treatment Info, Emergency Contact sections here using Bootstrap 5 layout, same pattern as above */}
