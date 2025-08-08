@@ -143,28 +143,34 @@ const handleAddAppointment = (savedAppointment) => {
       if (!res.ok) throw new Error("Failed to add patient");
 
       // 2. Delete from appointment list
-      const appointmentId = appointmentData.id;
-      const deleteRes =  await fetch(`https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/appointmentlist/${appointmentId}`, {
-        method: "DELETE",
-      });
-      //if (!deleteRes.ok) throw new Error("Delete failed");
-
-      // Call parent handler to add to patients list
-      if (onAddToPatients) {
-        onAddToPatients({
-          id: Date.now(),
-          firstname: appointmentData.patientName,
-          email: appointmentData.patientEmail,
-          phone: appointmentData.patientPhone,
-          registrationDate: new Date().toISOString().split('T')[0],
-          status: 'Active',
-          lastVisit: appointmentData.date,
-          treatmentType: appointmentData.type,
-          doctor: appointmentData.doctor
-        });
-      }
-      // 3. Remove from UI
-      setAppointments(prev => prev.filter(a => a.id !== appointmentData.id));
+      try {
+          const res = await fetch(`${appointmentAPI}/${appointmentData.id}`, {
+            method: 'DELETE',
+          });
+          if (res.ok) {
+            //setAppointments(appointments.filter(apt => apt.id !== id));
+            setAppointments(prev => prev.filter(a => a.id !== appointmentData.id));
+            // Call parent handler to add to patients list
+            if (onAddToPatients) {
+              onAddToPatients({
+                id: Date.now(),
+                firstname: appointmentData.patientName,
+                email: appointmentData.patientEmail,
+                phone: appointmentData.patientPhone,
+                registrationDate: new Date().toISOString().split('T')[0],
+                status: 'Active',
+                lastVisit: appointmentData.date,
+                treatmentType: appointmentData.type,
+                doctor: appointmentData.doctor
+              });
+            }  
+          } else {
+            alert('Failed to delete appointment.');
+          }
+        } catch (error) {
+          console.error('Error deleting appointment:', error);
+          alert('An error occurred while deleting the appointment.');
+        }         
     } catch (err) {
       console.error("Error:", err);
       alert("Failed to move patient. Please try again.");
