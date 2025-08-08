@@ -59,6 +59,19 @@ const AppContent = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+  const fetchPatients = async () => {
+    try {
+      const res = await fetch('https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist');
+      const data = await res.json();
+      setPatients(data);
+    } catch (err) {
+      console.error("Failed to fetch patients:", err);
+    }
+  };
+  fetchPatients();
+}, []);
+
   const handleItemClick = (itemId) => {
     setActiveItem(itemId);
     // Close mobile menu when item is clicked
@@ -67,22 +80,78 @@ const AppContent = () => {
     }
   };
 
-  const handleAddToPatients = (patientData) => {
-    setPatients(prev => [...prev, patientData]);
+  const handleAddToPatients = async (patientData) => {
+     try {
+      const res = await fetch('https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patientData),
+      });
+
+      const newPatient = await res.json();
+      setPatients(prev => [...prev, newPatient]);
+    } catch (error) {
+      console.error('Error adding patient from appointment:', error);
+      alert('Failed to add patient to the system. Please try again.');
+    }
   };
 
-  const handleAddPatient = (patientData) => {
-    setPatients(prev => [...prev, patientData]);
-  };
+  const handleAddPatient = async (patientData) => {
+  try {
+    const res = await fetch('https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patientData)
+    });
 
+    const newPatient = await res.json();
+    setPatients(prev => [...prev, newPatient]);
+  } catch (error) {
+    console.error("Error adding patient:", error);
+  }
+};
+
+  /*
   const handleEditPatient = (patientData) => {
     setPatients(prev => prev.map(p => p.id === patientData.id ? patientData : p));
   };
+  */
 
-  const handleDeletePatient = (patientId) => {
-    if (window.confirm('Are you sure you want to delete this patient?')) {
-      setPatients(prev => prev.filter(p => p.id !== patientId));
+  const handleEditPatient = async (patientData) => {
+    try {
+      const response = await fetch(`https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist/${patientData.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patientData)
+      });
+      const updated = await response.json();
+      setPatients(prev =>
+        prev.map(p => p.id === updated.id ? updated : p)
+      );
+    } catch (error) {
+      console.error('Error updating patient:', error);
     }
+  };
+
+
+  const handleDeletePatient = async (patientId) => {
+
+    const confirmDelete = window.confirm('Are you sure you want to delete this patient?');
+
+    if (!confirmDelete) return;
+
+    try {
+      await fetch(`https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist/${patientId}`, {
+        method: 'DELETE'
+      });
+
+      // Remove from local state
+      setPatients(prev => prev.filter(p => p.id !== patientId));
+    } catch (error) {
+      console.error('Failed to delete patient:', error);
+      alert('Error deleting patient. Please try again.');
+    }
+
   };
 
   const getPageTitle = () => {

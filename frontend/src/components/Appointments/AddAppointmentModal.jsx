@@ -66,7 +66,7 @@ const handleSubmit = async (e) => {
 
   // Mock patient data for search
   const mockPatients = [
-    { id: 1, name: 'Sarah Johnson', email: 'sarah.johnson@email.com', phone: '+1 (555) 123-4567' },
+    { id: 1, name: 'Sarah Johnsondddd', email: 'sarah.johnson@email.com', phone: '+1 (555) 123-4567' },
     { id: 2, name: 'Emily Davis', email: 'emily.davis@email.com', phone: '+1 (555) 234-5678' },
     { id: 3, name: 'Lisa Wilson', email: 'lisa.wilson@email.com', phone: '+1 (555) 345-6789' },
     { id: 4, name: 'Maria Garcia', email: 'maria.garcia@email.com', phone: '+1 (555) 456-7890' },
@@ -110,7 +110,7 @@ const handleSubmit = async (e) => {
   ];
 
   const doctors = [
-    'Dr. Smith',
+    'Dr. Chetan Rao',
     'Dr. Johnson',
     'Dr. Brown',
     'Dr. Wilson',
@@ -219,7 +219,7 @@ const handleSubmit = async (e) => {
                       type="tel"
                       className="form-control"
                       name="patientAltPhone"
-                      value={formData.patientAltPhone}
+                      value={formData.patientPhone}
                       onChange={handleInputChange}
                       required
                     />

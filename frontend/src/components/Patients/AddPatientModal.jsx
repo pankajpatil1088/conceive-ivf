@@ -1,33 +1,40 @@
-import React, { useState } from 'react';
-import { Save, X, User, Heart, Calendar, Phone, Mail, MapPin } from 'lucide-react';
-
-export const AddPatientModal = ({ onClose, onSave }) => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
-    gender: '',
+import React, { useEffect, useState } from 'react';
+import { Save, X, User } from 'lucide-react';
+import './AddPatientModal.css';
+export const AddPatientModal = ({ onClose, onSave, existingPatient }) => {
+  const [formData, setFormData] = useState({    
+    firstname: '',
+    middlename: '',
+    lastname: '',
     email: '',
-    phone: '',
+    phonenumber: '',
+    alternatePhone: '',
+    date_of_birth: '',
+    age: '',
+    gender: '',
+    bloodgroup: '',
+    adharnumber: '',
+    pannumber: '',
+    refunit: '',
+    occupation: '',
+    anniversarydate: '',
     address: '',
     city: '',
     state: '',
-    zipCode: '',
-    bloodGroup: '',
-    allergies: '',
-    currentMedications: '',
-    previousSurgeries: '',
-    reasonForTreatment: '',
-    previousIVFAttempts: '',
-    partnerAge: '',
-    menstrualCycle: '',
-    lastMenstrualPeriod: '',
-    emergencyName: '',
-    emergencyPhone: '',
-    emergencyRelation: '',
+    pincode: '',
+    patienttype: '',
+    marritalstatus: '',
+    district: '',
     doctor: '',
-    treatmentType: ''
+    treatmentType: '',
+    status: 'Active'
   });
+
+  useEffect(() => {
+    if (existingPatient) {
+      setFormData(existingPatient);
+    }
+  }, [existingPatient]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,439 +49,229 @@ export const AddPatientModal = ({ onClose, onSave }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
+    const fullName = `${formData.firstname || ''} ${formData.middlename || ''} ${formData.lastname || ''}`.trim();
+
     const patientData = {
-      id: Date.now(),
-      name: `${formData.firstName} ${formData.lastName}`,
-      email: formData.email,
-      phone: formData.phone,
-      registrationDate: new Date().toISOString().split('T')[0],
-      status: 'Active',
-      lastVisit: null,
-      treatmentType: formData.treatmentType || formData.reasonForTreatment,
-      doctor: formData.doctor,
-      dateOfBirth: formData.dateOfBirth,
-      gender: formData.gender,
-      address: formData.address,
-      city: formData.city,
-      state: formData.state,
-      zipCode: formData.zipCode,
-      bloodGroup: formData.bloodGroup,
-      allergies: formData.allergies,
-      currentMedications: formData.currentMedications,
-      previousSurgeries: formData.previousSurgeries,
-      reasonForTreatment: formData.reasonForTreatment,
-      previousIVFAttempts: formData.previousIVFAttempts,
-      partnerAge: formData.partnerAge,
-      menstrualCycle: formData.menstrualCycle,
-      lastMenstrualPeriod: formData.lastMenstrualPeriod,
-      emergencyContact: {
-        name: formData.emergencyName,
-        phone: formData.emergencyPhone,
-        relation: formData.emergencyRelation
-      }
+      ...formData,
+      name: fullName,
+      registrationDate: existingPatient?.registrationDate || new Date().toISOString().split('T')[0],
     };
-    
+
     onSave(patientData);
     setIsSubmitting(false);
   };
 
-  const treatmentTypes = [
-    'IVF (In Vitro Fertilization)',
-    'IUI (Intrauterine Insemination)',
-    'ICSI (Intracytoplasmic Sperm Injection)',
-    'Egg Freezing',
-    'Sperm Freezing',
-    'Embryo Freezing',
-    'Fertility Assessment',
-    'Hormone Therapy',
-    'Surgery',
-    'Consultation'
-  ];
-
-  const doctors = [
-    'Dr. Smith',
-    'Dr. Johnson',
-    'Dr. Brown',
-    'Dr. Wilson',
-    'Dr. Davis'
-  ];
-
   return (
-<div className="card card-body shadow-sm ">
-  <h5 className="mb-4 d-flex align-items-center">
-    <User size={20} className="me-2" />
-    Add New Patient
-    <button
-      type="button"
-      className="btn-close ms-auto"
-      aria-label="Close"
-      onClick={onClose}
-    />
-  </h5>
-
-  <form onSubmit={handleSubmit}>
-    {/* Personal Information */}
-    <h6 className="mb-3 border-bottom pb-1 d-flex align-items-center">
-      <User size={18} className="me-2" />
-      Personal Information
-    </h6>
-    
-    <div className="row">
-      <div className="col-md-4 mb-3">
-        <label className="form-label">First Name *</label>
-        <input
-          type="text"
-          className="form-control"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleInputChange}
-          required
+    <div className="custom-modal-backdrop">
+         <div className="card card-body shadow">
+      <h5 className="d-flex align-items-center">
+        <User size={20} className="me-2" />
+        {existingPatient ? 'Edit Patient' : 'Add New Patient'}
+        <button
+          type="button"
+          className="btn-close ms-auto"
+          onClick={onClose}
+          aria-label="Close"
         />
-      </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">Middle Name *</label>
-        <input
-          type="text"
-          className="form-control"
-          name="middleName"
-          value={formData.middleName}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">Last Name *</label>
-        <input
-          type="text"
-          className="form-control"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-    </div>
-
-    <div className="row">
-      <div className="col-md-4 mb-3">
-        <label className="form-label">Date of Birth *</label>
-        <input
-          type="date"
-          className="form-control"
-          name="dateOfBirth"
-          value={formData.dateOfBirth}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-         <div className="col-md-4 mb-3">
-        <label className="form-label">Age *</label>
-        <input
-          type="text"
-          className="form-control"
-          name="age"
-          value={formData.age}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">Gender *</label>
-        <select
-          className="form-select"
-          name="gender"
-          value={formData.gender}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Gender</option>
-          <option value="female">Female</option>
-          <option value="male">Male</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">Marital Status *</label>
-        <select
-          className="form-select"
-          name="maritalStatus"
-          value={formData.maritalStatus}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Marital Status</option>
-          <option value="single">Single</option>
-          <option value="married">Married</option>
-          <option value="divorced">Divorced</option>
-          <option value="widowed">Widowed</option>
-        </select>
-      </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">Patient Type *</label>
-        <select
-          className="form-select"
-          name="patientType"
-          value={formData.patientType}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Select Patient Type</option>
-          <option value="Normal">Normal</option>
-          <option value="Package">Package</option>
-          <option value="VIP">VIP</option>
-          <option value="Credit">Credit</option>
-        </select>
-      </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">Blood Group</label>
-        <select
-          className="form-select"
-          name="bloodGroup"
-          value={formData.bloodGroup}
-          onChange={handleInputChange}
-        >
-          <option value="">Select Blood Group</option>
-          <option value="A+">A+</option>
-          <option value="A-">A-</option>
-          <option value="B+">B+</option>
-          <option value="B-">B-</option>
-          <option value="AB+">AB+</option>
-          <option value="AB-">AB-</option>
-          <option value="O+">O+</option>
-          <option value="O-">O-</option>
-        </select>
-      </div>
-
-       <div className="col-md-4 mb-3">
-        <label className="form-label">
-          <Phone size={16} className="me-1" />
-          Phone Number*
-        </label>
-        <input
-          type="tel"
-          className="form-control"
-          name="phone"
-          value={formData.phone}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-       <div className="col-md-4 mb-3">
-        <label className="form-label">
-          <Phone size={16} className="me-1" />
-          Alternate Phone Number*
-        </label>
-        <input
-          type="tel"
-          className="form-control"
-          name="altphone"
-          value={formData.altphone}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">
-          <Mail size={16} className="me-1" />
-          Email *
-        </label>
-        <input
-          type="email"
-          className="form-control"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-    </div>
-
-    <div className="row">
-      
-      <div className="col-md-4 mb-3">
-        
-          <label className="form-label"> Adhaar Number*</label>
-        <input
-          type="tel"
-          className="form-control"
-          name="adhaar"
-          value={formData.adhaar}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
+      </h5>
+     <form onSubmit={handleSubmit}>
+      {/* === Personal Information === */}
+      <h6 className="mb-3 border-bottom pb-1 text-primary fw-bold">Personal Information</h6>
+      <div className="row">
         <div className="col-md-4 mb-3">
-      <label className="form-label">  PAN Number*</label>
-
-        <input
-          type="tel"
-          className="form-control"
-          name="pan"
-          value={formData.pan}
-          onChange={handleInputChange}
-          required
-        />
+          <label className="form-label">First Name *</label>
+          <input type="text" className="form-control" name="firstname" value={formData.firstname} onChange={handleInputChange} required />
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Middle Name</label>
+          <input type="text" className="form-control" name="middlename" value={formData.middlename} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Last Name *</label>
+          <input type="text" className="form-control" name="lastname" value={formData.lastname} onChange={handleInputChange} required />
+        </div>
       </div>
-<div className="col-md-4 mb-3">
-        <label className="form-label">
-          
-          Refering Unit *
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          name="referingunit"
-          value={formData.referingunit}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-    </div>
 
       <div className="row">
-      
-      <div className="col-md-4 mb-3">
-        
-          <label className="form-label"> Occupation</label>
-        <input
-          type="tel"
-          className="form-control"
-          name="occupation"
-          value={formData.occupation}
-          onChange={handleInputChange}
-          
-        />
-      </div>
         <div className="col-md-4 mb-3">
-      <label className="form-label">  Anniversary Date</label>
-
-        <input
-          type="date"
-          className="form-control"
-          name="anniversarydate"  
-          value={formData.anniversarydate}
-          onChange={handleInputChange}
-          
-        />
-      </div>
-    </div>
-
-    <div className="mb-3">
-      <label className="form-label">
-        <MapPin size={16} className="me-1" />
-        Address
-      </label>
-      <textarea
-        className="form-control"
-        name="address"
-        value={formData.address}
-        onChange={handleInputChange}
-        rows={2}
-      />
-    </div>
-
-    <div className="row">
-      <div className="col-md-4 mb-3">
-        <label className="form-label">City</label>
-        <input
-          type="text"
-          className="form-control"
-          name="city"
-          value={formData.city}
-          onChange={handleInputChange}
-        />
-      </div>
+          <label className="form-label">Date of Birth</label>
+          <input type="date" className="form-control" name="date_of_birth" value={formData.date_of_birth} onChange={handleInputChange} />
+        </div>
         <div className="col-md-4 mb-3">
-        <label className="form-label">District</label>
-        <input
-          type="text"
-          className="form-control"
-          name="district"
-          value={formData.district}
-          onChange={handleInputChange}
-        />
+          <label className="form-label">Age</label>
+          <input type="number" className="form-control" name="age" value={formData.age} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Gender</label>
+          <select className="form-select" name="gender" value={formData.gender} onChange={handleInputChange}>
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
       </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">State</label>
-        <input
-          type="text"
-          className="form-control"
-          name="state"
-          value={formData.state}
-          onChange={handleInputChange}
-        />
+
+      <div className="row">
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Blood Group</label>
+          <select className="form-select" name="bloodgroup" value={formData.bloodgroup} onChange={handleInputChange}>
+            <option value="">Select</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Marital Status</label>
+          <select className="form-select" name="marritalstatus" value={formData.marritalstatus} onChange={handleInputChange}>
+            <option value="">Select</option>
+            <option value="Single">Single</option>
+            <option value="Married">Married</option>
+            <option value="Divorced">Divorced</option>
+          </select>
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Anniversary Date</label>
+          <input type="date" className="form-control" name="anniversarydate" value={formData.anniversarydate} onChange={handleInputChange} />
+        </div>
       </div>
-      <div className="col-md-4 mb-3">
-        <label className="form-label">ZIP Code</label>
-        <input
-          type="text"
-          className="form-control"
-          name="zipCode"
-          value={formData.zipCode}
-          onChange={handleInputChange}
-        />
+
+      {/* === Contact Information === */}
+      <h6 className="mb-3 border-bottom pb-1 text-primary fw-bold">Contact Information</h6>
+      <div className="row">
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Phone *</label>
+          <input type="tel" className="form-control" name="phone" value={formData.phone} onChange={handleInputChange} required />
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Alternate Phone</label>
+          <input type="tel" className="form-control" name="alternatePhone" value={formData.alternatePhone} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Email *</label>
+          <input type="email" className="form-control" name="email" value={formData.email} onChange={handleInputChange} required />
+        </div>
       </div>
-      <div className="col-md-4 mb-3">
-  <label className="form-label">Status</label>
-  <div>
-    <label className="form-check-label ">
-      <input
-        type="radio"
-        className="form-check-input me-3"
-        name="status"
-        value="Active"
-        checked={formData.status === "Active"}
-        onChange={handleInputChange}
-      />
-      Active
-    </label>
-    <label className="form-check-label ms-3">
-      <input
-        type="radio"
-        className="form-check-input me-3"
-        name="status"
-        value="Inactive"
-        checked={formData.status === "Inactive"}
-        onChange={handleInputChange}
-      />
-      Inactive
-    </label>
-  </div>
-</div>
+
+      <div className="row">
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Address</label>
+          <input type="text" className="form-control" name="address" value={formData.address} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-3 mb-3">
+          <label className="form-label">City</label>
+          <input type="text" className="form-control" name="city" value={formData.city} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-3 mb-3">
+          <label className="form-label">District</label>
+          <input type="text" className="form-control" name="district" value={formData.district} onChange={handleInputChange} />
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-md-6 mb-3">
+          <label className="form-label">State</label>
+          <input type="text" className="form-control" name="state" value={formData.state} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-6 mb-3">
+          <label className="form-label">PIN Code</label>
+          <input type="text" className="form-control" name="pincode" value={formData.pincode} onChange={handleInputChange} />
+        </div>
+      </div>
+
+      {/* === Identification & Other === */}
+      <h6 className="mb-3 border-bottom pb-1 text-primary fw-bold">Other Details</h6>
+      <div className="row">
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Aadhar Number</label>
+          <input type="text" className="form-control" name="adharnumber" value={formData.adharnumber} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">PAN Number</label>
+          <input type="text" className="form-control" name="pannumber" value={formData.pannumber} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Referring Unit</label>
+          <input type="text" className="form-control" name="refunit" value={formData.refunit} onChange={handleInputChange} />
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Occupation</label>
+          <input type="text" className="form-control" name="occupation" value={formData.occupation} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-6 mb-3">
+          <label className="form-label">Patient Type</label>
+          <select className="form-select" name="patienttype" value={formData.patienttype} onChange={handleInputChange}>
+            <option value="">Select</option>
+            <option value="Normal">Normal</option>
+            <option value="Package">Package</option>
+            <option value="VIP">VIP</option>
+          </select>
+        </div>
+      </div>
+
+    {/* === Identification & Other === */}
+      <h6 className="mb-3 border-bottom pb-1 text-primary fw-bold">Treatment Details</h6>
+      <div className="row">       
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Doctor</label>
+          <input type="text" className="form-control" name="doctor" value={formData.doctor} onChange={handleInputChange} />
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Treatment Type</label>
+          <select className="form-select" name="treatmentType" value={formData.treatmentType} onChange={handleInputChange}>
+            <option value="">Select</option>
+            <option value="IVF">IVF</option>          
+            <option value="IUI">IUI</option>
+            <option value="ICSI">ICSI</option>
+            <option value="FET">FET</option>
+            <option value="Other">Other</option>        
+          </select>   
+        </div>
+        <div className="col-md-4 mb-3">
+          <label className="form-label">Status</label>
+          <select className="form-select" name="status" value={formData.status} onChange={handleInputChange}>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div> 
+      </div>
+
+     
+
+      {/* === Submit === */}
+      <div className="d-flex justify-content-end border-top pt-3 mt-4">
+        <button type="button" className="btn btn-secondary me-2" onClick={onClose}>
+          <X size={16} className="me-1" />
+          Cancel
+        </button>
+        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2"></span>
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save size={16} className="me-1" />
+              Save Patient
+            </>
+          )}
+        </button>
+      </div>
+    </form>
+
     </div>
-
-    {/* Continue adding your Medical Info, Treatment Info, Emergency Contact sections here using Bootstrap 5 layout, same pattern as above */}
-
-    {/* Submit Actions */}
-    <div className="d-flex justify-content-end border-top pt-3 mt-4">
-      <button
-        type="button"
-        className="btn btn-secondary me-2"
-        onClick={onClose}
-      >
-        <X size={16} className="me-1" />
-        Cancel
-      </button>
-      <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-        {isSubmitting ? (
-          <>
-            <span className="spinner-border spinner-border-sm me-2"></span>
-            Adding Patient...
-          </>
-        ) : (
-          <>
-            <Save size={16} className="me-1" />
-            Add Patient
-          </>
-        )}
-      </button>
     </div>
-  </form>
-</div>
-
+   
   );
 };

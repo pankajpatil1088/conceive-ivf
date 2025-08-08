@@ -106,7 +106,7 @@ const handleAddAppointment = (savedAppointment) => {
   };
 
   // When "Add Patient" is clicked, mark the appointment as a patient and call the parent handler to add to patients list
-  const handleAddToPatients = (appointmentId) => {
+  /*const handleAddToPatients = (appointmentId) => {
     const appointment = appointments.find(apt => apt.id === appointmentId);
     if (appointment && !appointment.isPatient) {
       // Mark as patient in local state
@@ -118,7 +118,7 @@ const handleAddAppointment = (savedAppointment) => {
       if (onAddToPatients) {
         onAddToPatients({
           id: Date.now(),
-          name: appointment.patientName,
+          firstname: appointment.patientName,
           email: appointment.patientEmail,
           phone: appointment.patientPhone,
           registrationDate: new Date().toISOString().split('T')[0],
@@ -130,6 +130,47 @@ const handleAddAppointment = (savedAppointment) => {
       }
     }
   };
+  */
+ const handleAddPatientFromAppointment = async (appointmentData) => {
+    try {
+      // 1. Post to patient list
+      const res = await fetch("https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(appointmentData),
+      });
+
+      if (!res.ok) throw new Error("Failed to add patient");
+
+      // 2. Delete from appointment list
+      const appointmentId = appointmentData.id;
+      const deleteRes =  await fetch(`https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/appointmentlist/${appointmentId}`, {
+        method: "DELETE",
+      });
+      //if (!deleteRes.ok) throw new Error("Delete failed");
+
+      // Call parent handler to add to patients list
+      if (onAddToPatients) {
+        onAddToPatients({
+          id: Date.now(),
+          firstname: appointmentData.patientName,
+          email: appointmentData.patientEmail,
+          phone: appointmentData.patientPhone,
+          registrationDate: new Date().toISOString().split('T')[0],
+          status: 'Active',
+          lastVisit: appointmentData.date,
+          treatmentType: appointmentData.type,
+          doctor: appointmentData.doctor
+        });
+      }
+      // 3. Remove from UI
+      setAppointments(prev => prev.filter(a => a.id !== appointmentData.id));
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Failed to move patient. Please try again.");
+    }
+  };
+
 
   const handleSelectAppointment = (id) => {
     setSelectedAppointments(prev => 
@@ -520,7 +561,8 @@ const handleAddAppointment = (savedAppointment) => {
                       ) : (
                         <button
                           className="btn btn-sm btn-outline-primary"
-                          onClick={() => handleAddToPatients(appointment.id)}
+                          //onClick={() => handleAddToPatients(appointment.id)}
+                          onClick={() => handleAddPatientFromAppointment(appointment)}                          
                           title="Add to Patients List"
                         >
                           <UserCheck size={14} className="me-1" />
