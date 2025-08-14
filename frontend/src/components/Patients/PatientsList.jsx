@@ -3,6 +3,7 @@ import { Users, Search, Plus, Edit, Trash2, Phone, Mail, Calendar, User, Eye, Do
 import { AddPatientModal } from './AddPatientModal';
 import { PatientInsuranceForm } from './PatientInsuranceForm';
 import { PatientDocumentForm } from './PatientDocumentForm';
+import RelationMapping from "./RelationMapping";
 
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -460,6 +461,9 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
   <PatientDocumentForm />
 )}
 
+{activeTab === 'relation-mapping' && (
+  <RelationMapping />
+)}
       {/* Patients Table */}
      
 

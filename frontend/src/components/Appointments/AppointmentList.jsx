@@ -5,15 +5,8 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const TABS = [
-  { key: 'all', label: 'All Appointments', icon: <Calendar size={18} /> },
-  { key: 'confirmed', label: 'Confirmed', icon: <UserCheck size={18} /> },
-  { key: 'pending', label: 'Pending', icon: <Clock size={18} /> },
-  { key: 'cancelled', label: 'Cancelled', icon: <Trash2 size={18} /> },
-  { key: 'completed', label: 'Completed', icon: <CheckCircle size={18} /> },
-];
+
 export const AppointmentList = ({ onAddToPatients }) => {
-    const [activeTab, setActiveTab] = useState('all');
 const [editingAppointment, setEditingAppointment] = useState(null);
 
   const [appointments, setAppointments] = useState([]);
@@ -30,11 +23,7 @@ const [editingAppointment, setEditingAppointment] = useState(null);
       console.error('Error fetching appointment data:', error);
     }
   };
-
-  useEffect(() => {
-    setFilterStatus(activeTab);
-  }, [activeTab]);
-
+  
   useEffect(() => {
     getAppointmentData();
   }, []);
@@ -391,31 +380,6 @@ const handleAddAppointment = (savedAppointment) => {
       </div>
 
 
- <div className="fancy-tabs mb-4">
-        <ul className="nav nav-pills nav-justified gap-2">
-          {TABS.map(tab => (
-            <li className="nav-item" key={tab.key}>
-              <button
-                className={`nav-link d-flex align-items-center justify-content-center px-4 py-2 rounded-pill fw-semibold shadow-sm transition-all ${activeTab === tab.key ? 'active fancy-tab-active' : 'fancy-tab'}`}
-                style={{
-                  background: activeTab === tab.key
-                    ? 'linear-gradient(90deg, #00347d 0%, #0dcaf0 100%)'
-                    : '#f5f7fa',
-                  color: activeTab === tab.key ? '#fff' : '#00347d',
-                  border: 'none',
-                  fontSize: '1rem',
-                  boxShadow: activeTab === tab.key ? '0 4px 16px rgba(13,110,253,0.10)' : 'none',
-                  transition: 'all 0.2s'
-                }}
-                onClick={() => setActiveTab(tab.key)}
-              >
-                {tab.icon}
-                <span className="ms-2">{tab.label}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
 
       {/* Appointments Table */}
       <div className="appointments-table-container">
