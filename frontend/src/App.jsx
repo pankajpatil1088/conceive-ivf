@@ -67,7 +67,7 @@ const AppContent = () => {
     }
   };
 
-  const handleAddToPatients = (patientData) => {
+  const handleAddToPatients = (patientData) => {    
     setPatients(prev => [...prev, patientData]);
   };
 
@@ -79,12 +79,40 @@ const AppContent = () => {
     setPatients(prev => prev.map(p => p.id === patientData.id ? patientData : p));
   };
 
-  const handleDeletePatient = (patientId) => {
-    if (window.confirm('Are you sure you want to delete this patient?')) {
+  const handleDeletePatient = async (patientId) => {
+    if (!window.confirm('Are you sure you want to delete this patient?')) return;
+
+    try {
+      const res = await fetch(
+        `https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist/${patientId}`,
+        { method: 'DELETE' }
+      );
+
+      if (!res.ok) throw new Error('Failed to delete patient');
+
+      // Remove from local state after API success
       setPatients(prev => prev.filter(p => p.id !== patientId));
+    } catch (error) {
+      console.error('Error deleting patient:', error);
+      alert('Could not delete patient. Please try again.');
     }
   };
 
+
+  useEffect(() => {
+  const fetchPatients = async () => {
+      try {
+        const res = await fetch('https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist');
+        if (!res.ok) throw new Error('Failed to fetch patients');
+        const data = await res.json();
+        setPatients(data);
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+
+    fetchPatients();
+  }, []);
   const getPageTitle = () => {
     switch (activeItem) {
       case 'dashboard': return 'Dashboard';
