@@ -14,10 +14,11 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedPatients, setSelectedPatients] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editPatient, setEditPatient] = useState(null);
   const [activeTab, setActiveTab] = useState('patient-details');
 
   const filteredPatients = patients.filter(patient => {
-    const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = patient.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          patient.doctor?.toLowerCase().includes(searchTerm.toLowerCase());
     
@@ -25,6 +26,7 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
     
     return matchesSearch && matchesStatus;
   });
+ 
 
   const handleSelectPatient = (id) => {
     setSelectedPatients(prev => 
@@ -42,6 +44,42 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
     }
   };
 
+    const handleSavePatient = async (patientData) => {
+    try {
+      if (editPatient) {
+        // ✏️ EDIT existing patient (PUT request)
+        const res = await fetch(
+          `https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist/${editPatient.id}`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(patientData),
+          }
+        );
+        if (!res.ok) throw new Error('Failed to update patient');
+        const updated = await res.json();
+        onEditPatient(updated);
+      } else {
+        // ➕ ADD new patient (POST request)
+        const res = await fetch(
+          `https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(patientData),
+          }
+        );
+        if (!res.ok) throw new Error('Failed to add patient');
+        const created = await res.json();
+        onAddPatient(created);
+      }
+      setShowAddModal(false);
+      setEditPatient(null);
+    } catch (error) {
+      console.error(error);
+      alert('Error saving patient');
+    }
+  };
   const exportToExcel = () => {
     const exportData = filteredPatients.map(patient => ({
       'Patient Name': patient.name,
@@ -307,12 +345,12 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
 
 {activeTab === 'patient-details' && (
   <div className="patients-table-container">
-    {showAddModal && (
+    {/*showAddModal && (
       <AddPatientModal
         onClose={() => setShowAddModal(false)}
         onSave={handleAddPatient}
       />
-    )}
+    )*/}
 
     {!showAddModal && (
       <div className="table-responsive">
@@ -364,7 +402,7 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
                     </td>
                     <td>
                       <div className="patient-info">
-                        <div className="patient-name">{patient.name}</div>
+                        <div className="patient-name">{patient.firstName}</div>
                         <small className="text-muted">ID: {patient.id}</small>
                       </div>
                     </td>
@@ -422,7 +460,11 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
                         <button 
                           className="btn btn-sm btn-outline-primary me-1" 
                           title="Edit"
-                          onClick={() => onEditPatient && onEditPatient(patient)}
+                          onClick={() => {
+                            setEditPatient(patient);
+                            setShowAddModal(true);
+                          }}
+                          //onClick={() => onEditPatient && onEditPatient(patient)}
                         >
                           <Edit size={14} />
                         </button>
@@ -465,15 +507,19 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
   <RelationMapping />
 )}
       {/* Patients Table */}
-     
-
-      {/* Add Patient Modal */}
-      {/* {showAddModal && (
+      {showAddModal && (
         <AddPatientModal
-          onClose={() => setShowAddModal(false)}
-          onSave={handleAddPatient}
+          onClose={() => {
+            setShowAddModal(false);
+            setEditPatient(null);
+          }}
+          onSave={handleSavePatient}
+          initialData={editPatient} // pass patient to edit
         />
-      )} */}
+      )}
+
+
+     
     </div>
   );
 };

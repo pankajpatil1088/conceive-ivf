@@ -95,7 +95,7 @@ const handleAddAppointment = (savedAppointment) => {
   };
 
   // When "Add Patient" is clicked, mark the appointment as a patient and call the parent handler to add to patients list
-  const handleAddToPatients = (appointmentId) => {
+  /*const handleAddToPatients = (appointmentId) => {
     const appointment = appointments.find(apt => apt.id === appointmentId);
     if (appointment && !appointment.isPatient) {
       // Mark as patient in local state
@@ -119,6 +119,59 @@ const handleAddAppointment = (savedAppointment) => {
       }
     }
   };
+  */
+  const handleAddToPatients = async (appointmentId) => {
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    if (!appointment || appointment.isPatient) return;
+
+    try {
+      // 1️⃣ Add patient to patientlist API (REAL mock API)
+      const patientData = {
+        name: appointment.patientName,
+        email: appointment.patientEmail,
+        phone: appointment.patientPhone,
+        registrationDate: new Date().toISOString().split('T')[0],
+        status: 'Active',
+        lastVisit: appointment.date,
+        treatmentType: appointment.type,
+        doctor: appointment.doctor
+      };
+
+      const res = await fetch(
+        'https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(patientData)
+        }
+      );
+
+      if (!res.ok) throw new Error('Failed to add patient');
+      const savedPatient = await res.json();
+
+      // Update App.jsx patients state
+      if (onAddToPatients) {
+        onAddToPatients(savedPatient);
+      }
+      /*
+      // 2️⃣ Remove appointment from appointmentList API (REAL mock API)
+      const delRes = await fetch(
+        `https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/appointmentList/${appointmentId}`,
+        { method: 'DELETE' }
+      );
+
+      if (!delRes.ok) throw new Error('Failed to delete appointment');
+      */
+      // Update local appointment list
+      setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
+
+    } catch (error) {
+      console.error('Error adding patient:', error);
+      alert('Could not add patient. Please try again.');
+    }
+  };
+
+
 
   const handleSelectAppointment = (id) => {
     setSelectedAppointments(prev => 

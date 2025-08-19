@@ -29,6 +29,7 @@ const menuItems = [
   { id: 'reports', icon: FileText, label: 'Reports', path: ROUTES.REPORTS },
   { id: 'analytics', icon: BarChart3, label: 'Analytics', path: ROUTES.ANALYTICS },
   { id: 'settings', icon: Settings, label: 'Settings', path: ROUTES.SETTINGS },
+  { id: 'planning-details', icon: Calendar, label: 'Planning Details', path: '/planning-details' }, // New item
 ];
 
 export const Sidebar = ({

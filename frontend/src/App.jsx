@@ -12,6 +12,7 @@ import { PatientsList } from './components/Patients/PatientsList';
 import { ThemeConfiguration } from './components/Admin/ThemeConfiguration';
 import { Day2Evaluation } from './components/Evaluation/Day2Evaluation';
 import { ROUTES } from './constants';
+import PlanningDetails from './components/PlanningDetails/PlanningDetails'; // Adjust path as necessary
 
 // Import Bootstrap JS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -41,6 +42,7 @@ const AppContent = () => {
     else if (path === ROUTES.REPORTS) setActiveItem('reports');
     else if (path === ROUTES.ANALYTICS) setActiveItem('analytics');
     else if (path === ROUTES.SETTINGS) setActiveItem('settings');
+    else if (path === '/planning-details') setActiveItem('planning-details');
   }, [location.pathname]);
 
   const toggleMobileMenu = () => {
@@ -67,7 +69,7 @@ const AppContent = () => {
     }
   };
 
-  const handleAddToPatients = (patientData) => {
+  const handleAddToPatients = (patientData) => {    
     setPatients(prev => [...prev, patientData]);
   };
 
@@ -79,12 +81,40 @@ const AppContent = () => {
     setPatients(prev => prev.map(p => p.id === patientData.id ? patientData : p));
   };
 
-  const handleDeletePatient = (patientId) => {
-    if (window.confirm('Are you sure you want to delete this patient?')) {
+  const handleDeletePatient = async (patientId) => {
+    if (!window.confirm('Are you sure you want to delete this patient?')) return;
+
+    try {
+      const res = await fetch(
+        `https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist/${patientId}`,
+        { method: 'DELETE' }
+      );
+
+      if (!res.ok) throw new Error('Failed to delete patient');
+
+      // Remove from local state after API success
       setPatients(prev => prev.filter(p => p.id !== patientId));
+    } catch (error) {
+      console.error('Error deleting patient:', error);
+      alert('Could not delete patient. Please try again.');
     }
   };
 
+
+  useEffect(() => {
+  const fetchPatients = async () => {
+      try {
+        const res = await fetch('https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist');
+        if (!res.ok) throw new Error('Failed to fetch patients');
+        const data = await res.json();
+        setPatients(data);
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+
+    fetchPatients();
+  }, []);
   const getPageTitle = () => {
     switch (activeItem) {
       case 'dashboard': return 'Dashboard';
@@ -95,6 +125,7 @@ const AppContent = () => {
       case 'reports': return 'Reports';
       case 'analytics': return 'Analytics';
       case 'settings': return 'Settings';
+       case 'planning-details': return 'Planning Details';
       default: return 'Dashboard';
     }
   };
@@ -167,6 +198,11 @@ const AppContent = () => {
       <Day2Evaluation />
     </ProtectedRoute>
   } />
+ <Route path="/planning-details" element={
+            <ProtectedRoute>
+              <PlanningDetails /> {/* Add this route */}
+            </ProtectedRoute>
+          } />
   <Route path={ROUTES.REPORTS} element={
     <ProtectedRoute>
       <div className="fade-in">
