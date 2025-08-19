@@ -129,12 +129,15 @@ export const AppointmentList = ({ onAddToPatients }) => {
     try {
       // 1️⃣ Add patient to patientlist API (REAL mock API)
       const patientData = {
-        name: appointment.patientName,
+        firstName: appointment.patientName,
         email: appointment.patientEmail,
         phone: appointment.patientPhone,
+        altphone: appointment.patientAltPhone,
+        age: appointment.patientAge,
+        address: appointment.patientAddress,
         registrationDate: new Date().toISOString().split('T')[0],
         status: 'Active',
-        lastVisit: appointment.date,
+        lastVisit: appointment.date + ' ' + appointment.time,
         treatmentType: appointment.type,
         doctor: appointment.doctor
       };
@@ -238,6 +241,13 @@ export const AppointmentList = ({ onAddToPatients }) => {
     // Prepare table data
     const tableData = filteredAppointments.map(appointment => [
       appointment.patientName,
+      appointment.patientEmail,
+      appointment.patientPhone, 
+      appointment.firstName,
+      appointment.lastName,
+      appointment.middleName,
+      appointment.patientAge,
+      appointment.patientAddress,
       appointment.date,
       appointment.time,
       appointment.type,
@@ -248,7 +258,7 @@ export const AppointmentList = ({ onAddToPatients }) => {
 
     // Add table
     doc.autoTable({
-      head: [['Patient Name', 'Date', 'Time', 'Type', 'Doctor', 'Status', 'Patient']],
+      head: [['Patient Name', 'Email', 'Phone', 'First Name', 'Last Name', 'Middle Name', 'Age', 'Address', 'Date', 'Time', 'Type', 'Doctor', 'Status', 'Is Patient']],
       body: tableData,
       startY: 40,
       styles: {
@@ -265,12 +275,20 @@ export const AppointmentList = ({ onAddToPatients }) => {
       },
       columnStyles: {
         0: { cellWidth: 30 },
-        1: { cellWidth: 22 },
-        2: { cellWidth: 18 },
-        3: { cellWidth: 22 },
-        4: { cellWidth: 22 },
-        5: { cellWidth: 20 },
-        6: { cellWidth: 16 }
+        1: { cellWidth: 30 },
+        2: { cellWidth: 30 },
+        3: { cellWidth: 30 },
+        4: { cellWidth: 30 },
+        5: { cellWidth: 30 },
+        6: { cellWidth: 20 },
+        7: { cellWidth: 40 },
+        8: { cellWidth: 30 },
+        9: { cellWidth: 20 },
+        10: { cellWidth: 30 },
+        11: { cellWidth: 30 },
+        12: { cellWidth: 20 },
+        13: { cellWidth: 20 },
+        14: { cellWidth: 20 },
       }
     });
 
@@ -478,7 +496,7 @@ export const AppointmentList = ({ onAddToPatients }) => {
                 <th>Patient Name</th>
                 <th>Contact</th>
                 <th>Date & Time</th>
-                <th>Type</th>
+                <th>Treatment Type</th>
                 <th>Doctor</th>
                 <th>Status</th>
                 <th>Patient Status</th>

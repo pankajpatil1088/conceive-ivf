@@ -75,12 +75,31 @@ export const exportToPDF = (data, filename, title, headers) => {
   }
 };
 
-export const formatDate = (date) => {
-  if (!date) return '';
-  return new Date(date).toLocaleDateString();
+export const formatDate = (dateStr) => {
+  if (!dateStr) return "N/A";
+  const d = new Date(dateStr);
+  if (isNaN(d)) return "N/A";
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 };
 
 export const formatDateTime = (date) => {
   if (!date) return '';
   return new Date(date).toLocaleString();
+};
+
+export const calculateAge = (dob) => {
+  if (!dob) return "N/A";
+  const birthDate = new Date(dob);
+  if (isNaN(birthDate)) return "N/A";
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
 };
