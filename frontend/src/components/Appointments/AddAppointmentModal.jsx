@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Save, X, Search, User, Calendar, Clock } from 'lucide-react';
 
-export const AddAppointmentModal = ({ onClose, onSave }) => {
+export const AddAppointmentModal = ({ onClose, onSave,defaultValues  }) => {
   const [formData, setFormData] = useState({
     patientName: '',
     patientEmail: '',
@@ -13,6 +13,13 @@ export const AddAppointmentModal = ({ onClose, onSave }) => {
     doctor: '',
     notes: ''
   });
+
+
+  useEffect(() => {
+    if (defaultValues) {
+      setFormData(defaultValues);
+    }
+  }, [defaultValues]);
 
   const [patientSearch, setPatientSearch] = useState('');
   const [showPatientSearch, setShowPatientSearch] = useState(false);
@@ -36,11 +43,27 @@ export const AddAppointmentModal = ({ onClose, onSave }) => {
   };
 
   // Override handleSubmit to use API
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const saved = await saveAppointmentToApi(formData);
-    if (saved) onSave(saved);
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch(
+      defaultValues ? `${dataurl}/${defaultValues.id}` : dataurl,
+      {
+        method: defaultValues ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      }
+    );
+    if (!response.ok) throw new Error('Failed to save appointment');
+    const saved = await response.json();
+    onSave(saved);
+    onClose(); // Close after save
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 
   // Mock patient data for search
   const mockPatients = [
