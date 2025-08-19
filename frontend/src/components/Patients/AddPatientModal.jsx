@@ -135,7 +135,7 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
         
         <div className="row">
           <div className="col-md-6 mb-3">
-            <label className="form-label">First Name *</label>
+            <label className="form-label">First Name vv*</label>
             <input
               type="text"
               className="form-control"

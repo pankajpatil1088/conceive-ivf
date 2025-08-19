@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, Trash2, Upload, FileText } from 'lucide-react';
 
-export const PatientDocumentForm = () => {
+const API_URL = "https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist";
+
+export const PatientDocumentForm = ({ patientId }) => {
   const [formData, setFormData] = useState({
     date: '',
     documentType: '',
@@ -9,12 +11,44 @@ export const PatientDocumentForm = () => {
   });
   const [documents, setDocuments] = useState([]);
 
+  // 🔹 Fetch documents when patientId changes
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const res = await fetch(`${API_URL}/${patientId}`);
+        if (!res.ok) throw new Error("Failed to fetch documents");
+        const data = await res.json();
+        setDocuments(data.documents || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (patientId) fetchDocuments();
+  }, [patientId]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: files ? files[0] : value,
     }));
+  };
+
+  // 🔹 Save documents into API
+  const saveDocuments = async (updatedDocs) => {
+    try {
+      const res = await fetch(`${API_URL}/${patientId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ documents: updatedDocs }),
+      });
+      if (!res.ok) throw new Error("Failed to save documents");
+      const data = await res.json();
+      setDocuments(data.documents || []);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save document");
+    }
   };
 
   const handleUpload = () => {
@@ -25,14 +59,18 @@ export const PatientDocumentForm = () => {
       fileName: formData.file.name,
       date: formData.date,
       documentType: formData.documentType,
-      file: formData.file,
+      fileUrl: URL.createObjectURL(formData.file), // Mock preview
     };
-    setDocuments(prev => [...prev, newDoc]);
+
+    const updatedDocs = [...documents, newDoc];
+    saveDocuments(updatedDocs);
+
     setFormData({ date: '', documentType: '', file: null });
   };
 
   const handleDelete = (id) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== id));
+    const updatedDocs = documents.filter(doc => doc.id !== id);
+    saveDocuments(updatedDocs);
   };
 
   return (
@@ -88,16 +126,14 @@ export const PatientDocumentForm = () => {
               <th>File Name</th>
               <th>Date</th>
               <th>Document Type</th>
-              <th>Reupload</th>
               <th>Preview</th>
               <th>Action</th>
-              <th>Audit Log</th>
             </tr>
           </thead>
           <tbody>
             {documents.length === 0 ? (
               <tr>
-                <td colSpan="8" className="text-center">No documents uploaded</td>
+                <td colSpan="6" className="text-center">No documents uploaded</td>
               </tr>
             ) : (
               documents.map((doc, index) => (
@@ -108,22 +144,30 @@ export const PatientDocumentForm = () => {
                     day: '2-digit', month: 'short', year: 'numeric'
                   })}</td>
                   <td>{doc.documentType}</td>
-                  <td><button className="btn btn-sm btn-outline-primary">ReUpload</button></td>
-                  <td><Eye className="text-muted" /></td>
+                  <td>
+                    {doc.fileUrl ? (
+                      <a href={doc.fileUrl} target="_blank" rel="noreferrer">
+                        <Eye size={16} />
+                      </a>
+                    ) : (
+                      <FileText size={16} className="text-muted" />
+                    )}
+                  </td>
                   <td>
                     <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(doc.id)}>
                       <Trash2 size={14} />
                     </button>
                   </td>
-                  <td><button className="btn btn-sm btn-outline-secondary">View</button></td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
-        <div className="text-danger mt-2">
-          {documents.length > 0 && `Showing Records 1 to ${documents.length} of ${documents.length}`}
-        </div>
+        {documents.length > 0 && (
+          <div className="text-danger mt-2">
+            Showing Records 1 to {documents.length} of {documents.length}
+          </div>
+        )}
       </div>
     </div>
   );

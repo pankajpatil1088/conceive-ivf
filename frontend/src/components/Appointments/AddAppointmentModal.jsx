@@ -6,6 +6,7 @@ export const AddAppointmentModal = ({ onClose, onSave }) => {
     patientName: '',
     patientEmail: '',
     patientPhone: '',
+    patientAltPhone: '',
     date: '',
     time: '',
     type: '',
@@ -68,7 +69,8 @@ export const AddAppointmentModal = ({ onClose, onSave }) => {
       ...prev,
       patientName: patient.name,
       patientEmail: patient.email,
-      patientPhone: patient.phone
+      patientPhone: patient.phone,
+      patientAltPhone: patient.patientAltPhone
     }));
     setShowPatientSearch(false);
     setPatientSearch('');
@@ -87,7 +89,7 @@ export const AddAppointmentModal = ({ onClose, onSave }) => {
   ];
 
   const doctors = [
-    'Dr. Smith',
+    'Dr. Chetan Rao',
     'Dr. Johnson',
     'Dr. Brown',
     'Dr. Wilson',
