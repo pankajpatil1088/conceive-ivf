@@ -6,6 +6,7 @@ export const AddAppointmentModal = ({ onClose, onSave,defaultValues  }) => {
     patientName: '',
     patientEmail: '',
     patientPhone: '',
+    patientAltPhone: '',
     date: '',
     time: '',
     type: '',
@@ -91,7 +92,8 @@ const handleSubmit = async (e) => {
       ...prev,
       patientName: patient.name,
       patientEmail: patient.email,
-      patientPhone: patient.phone
+      patientPhone: patient.phone,
+      patientAltPhone: patient.patientAltPhone
     }));
     setShowPatientSearch(false);
     setPatientSearch('');
@@ -110,7 +112,7 @@ const handleSubmit = async (e) => {
   ];
 
   const doctors = [
-    'Dr. Smith',
+    'Dr. Chetan Rao',
     'Dr. Johnson',
     'Dr. Brown',
     'Dr. Wilson',

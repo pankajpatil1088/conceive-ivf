@@ -13,6 +13,7 @@ import { ThemeConfiguration } from './components/Admin/ThemeConfiguration';
 import { Day2Evaluation } from './components/Evaluation/Day2Evaluation';
 import { ROUTES } from './constants';
 import PlanningDetails from './components/PlanningDetails/PlanningDetails'; // Adjust path as necessary
+import { PatientDetail } from "./components/Patients/PatientDetail";
 
 // Import Bootstrap JS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -228,6 +229,7 @@ const AppContent = () => {
     </ProtectedRoute>
   } />
   <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+  <Route path="/patients/:id" element={  <ProtectedRoute>    <PatientDetail />  </ProtectedRoute>} />
 </Routes>
 
       </main>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Users, Search, Plus, Edit, Trash2, Phone, Mail, Calendar, User, Eye, Download, FileText } from 'lucide-react';
 import { AddPatientModal } from './AddPatientModal';
 import { PatientInsuranceForm } from './PatientInsuranceForm';
@@ -16,6 +17,8 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
   const [showAddModal, setShowAddModal] = useState(false);
   const [editPatient, setEditPatient] = useState(null);
   const [activeTab, setActiveTab] = useState('patient-details');
+
+  const navigate = useNavigate();
 
   const filteredPatients = patients.filter(patient => {
     const matchesSearch = patient.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -82,9 +85,18 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
   };
   const exportToExcel = () => {
     const exportData = filteredPatients.map(patient => ({
-      'Patient Name': patient.name,
-      'Email': patient.email,
+      'Patient Name': patient.patientName || `${patient.firstName} ${patient.lastName}`,
+      'First Name': patient.firstName,
+      'Last Name': patient.lastName,
+      'Middle Name': patient.middleName || '',
       'Phone': patient.phone,
+      'Date of Birth': patient.dateOfBirth || '',
+      'Email': patient.email,
+      'Age': patient.age || calculateAge(patient.dateOfBirth),
+      'Address': patient.address,
+      'City': patient.city,
+      'State': patient.state,
+      'Country': patient.country, 
       'Registration Date': patient.registrationDate,
       'Status': patient.status,
       'Last Visit': patient.lastVisit,
@@ -127,15 +139,15 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
       patient.name,
       patient.email,
       patient.phone,
-      patient.registrationDate,
       patient.status,
       patient.lastVisit || 'N/A',
-      patient.doctor || 'N/A'
+      patient.doctor || 'N/A',
+      patient.registrationDate,
     ]);
 
     // Add table
     doc.autoTable({
-      head: [['Name', 'Email', 'Phone', 'Reg. Date', 'Status', 'Last Visit', 'Doctor']],
+      head: [['Patient Name', 'Email', 'Phone', 'Status', 'Last Visit', 'Doctor', 'Registration Date']],
       body: tableData,
       startY: 40,
       styles: {
@@ -454,9 +466,10 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
                     </td>
                     <td>
                       <div className="action-buttons">
-                        <button className="btn btn-sm btn-outline-info me-1" title="View Details">
+                        <button className="btn btn-sm btn-outline-info me-1" title="View Details"
+                          onClick={() => navigate(`/patients/${patient.id}`)}>
                           <Eye size={14} />
-                        </button>
+                        </button>                        
                         <button 
                           className="btn btn-sm btn-outline-primary me-1" 
                           title="Edit"
