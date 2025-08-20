@@ -89,7 +89,8 @@ export const ROUTES = {
   DAY2_EVALUATION: '/day2-evaluation',
   REPORTS: '/reports',
   ANALYTICS: '/analytics',
-  SETTINGS: '/settings'
+  SETTINGS: '/settings',
+  PLANNING_DETAILS: '/planning-details'
 };
 
 export const LOCAL_STORAGE_KEYS = {

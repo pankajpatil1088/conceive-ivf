@@ -12,7 +12,10 @@ import { PatientsList } from './components/Patients/PatientsList';
 import { ThemeConfiguration } from './components/Admin/ThemeConfiguration';
 import { Day2Evaluation } from './components/Evaluation/Day2Evaluation';
 import { ROUTES } from './constants';
+import PlanningDetails from './components/PlanningDetails/PlanningDetails'; // Adjust path as necessary
 import { PatientDetail } from "./components/Patients/PatientDetail";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Import Bootstrap JS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -42,6 +45,7 @@ const AppContent = () => {
     else if (path === ROUTES.REPORTS) setActiveItem('reports');
     else if (path === ROUTES.ANALYTICS) setActiveItem('analytics');
     else if (path === ROUTES.SETTINGS) setActiveItem('settings');
+    else if (path === '/planning-details') setActiveItem('planning-details');
   }, [location.pathname]);
 
   const toggleMobileMenu = () => {
@@ -124,6 +128,7 @@ const AppContent = () => {
       case 'reports': return 'Reports';
       case 'analytics': return 'Analytics';
       case 'settings': return 'Settings';
+       case 'planning-details': return 'Planning Details';
       default: return 'Dashboard';
     }
   };
@@ -196,6 +201,11 @@ const AppContent = () => {
       <Day2Evaluation />
     </ProtectedRoute>
   } />
+ <Route path="/planning-details" element={
+            <ProtectedRoute>
+              <PlanningDetails /> {/* Add this route */}
+            </ProtectedRoute>
+          } />
   <Route path={ROUTES.REPORTS} element={
     <ProtectedRoute>
       <div className="fade-in">
@@ -234,7 +244,13 @@ const AppContent = () => {
 };
 
 const App = () => {
-  return <AppContent />;
+  return (
+   <>
+      {/* Your routes/components */}
+      <ToastContainer position="top-right" autoClose={3000} />
+      <AppContent />
+    </>
+  );
 };
 
 export default App;
