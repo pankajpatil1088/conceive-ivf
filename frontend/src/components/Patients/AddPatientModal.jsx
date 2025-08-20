@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Save, X, User, Heart, Calendar, Phone, Mail, MapPin } from 'lucide-react';
-
+import { formatDate, calculateAge } from '../../utils/exportUtils'; // Adjust the import path as necessary
 export const AddPatientModal = ({ onClose, onSave, initialData }) => {
   const [formData, setFormData] = useState({
     firstName: '',
+    middleName: '',
     lastName: '',
-    dateOfBirth: '',
+    maritalStatus: '',
     gender: '',
+    bloodGroup: '',
+    dateOfBirth: '',   
     email: '',
-    phone: '',
-    address: '',
+    phone: '',    
     city: '',
+    district: '',
+    altphone: '',
+    anniversarydate: '',
     state: '',
     zipCode: '',
-    bloodGroup: '',
+    adhaarNumber: '',    
+    panNumber: '',
+    occupation: '',
+    address: '',
     allergies: '',
     currentMedications: '',
     previousSurgeries: '',
@@ -26,7 +34,9 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
     emergencyPhone: '',
     emergencyRelation: '',
     doctor: '',
-    treatmentType: ''
+    treatmentType: '',
+    status: 'Active' // Default status
+       
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,8 +53,16 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
         gender: initialData.gender || '',
         email: initialData.email || '',
         phone: initialData.phone || '',
+        maritalStatus: initialData.maritalStatus || '',
+        adhaarNumber: initialData.adhaarNumber || '',
+        panNumber: initialData.panNumber || '',
+        occupation: initialData.occupation || '',
+        middleName: initialData.middleName || '',
         address: initialData.address || '',
         city: initialData.city || '',
+        district: initialData.district || '',
+        altphone: initialData.altphone || '',
+        anniversarydate: initialData.anniversarydate || '',
         state: initialData.state || '',
         zipCode: initialData.zipCode || '',
         bloodGroup: initialData.bloodGroup || '',
@@ -60,7 +78,8 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
         emergencyPhone: initialData.emergencyContact?.phone || '',
         emergencyRelation: initialData.emergencyContact?.relation || '',
         doctor: initialData.doctor || '',
-        treatmentType: initialData.treatmentType || ''
+        treatmentType: initialData.treatmentType || '',
+        status: initialData.status || 'Active' 
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +104,14 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
         name: formData.emergencyName,
         phone: formData.emergencyPhone,
         relation: formData.emergencyRelation
-      }
+      },
+      registrationDate: formatDate(initialData?.registrationDate || new Date().toISOString()),
+      dateOfBirth: formData.dateOfBirth || '',
+      age: calculateAge(formData.dateOfBirth),
+      lastVisitDate: initialData?.lastVisitDate || new Date().toISOString(),
+      createdBy: initialData?.createdBy || 'system', 
+      updatedBy: initialData?.updatedBy || 'system',
+      treatmentType: formData.treatmentType || '' 
     };
 
     await onSave(patientData);
@@ -134,8 +160,8 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
         </h6>
         
         <div className="row">
-          <div className="col-md-6 mb-3">
-            <label className="form-label">First Name vv*</label>
+          <div className="col-md-4 mb-3">
+            <label className="form-label">First Name*</label>
             <input
               type="text"
               className="form-control"
@@ -145,7 +171,12 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
               required
             />
           </div>
-          <div className="col-md-6 mb-3">
+           <div className="col-md-4">
+            <label className="form-label">Middle Name</label>
+            <input type="text" name="middleName" className="form-control"
+              value={formData.middleName} onChange={handleInputChange} />
+          </div>
+          <div className="col-md-4 mb-3">
             <label className="form-label">Last Name *</label>
             <input
               type="text"
@@ -160,16 +191,18 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
 
         <div className="row">
           <div className="col-md-4 mb-3">
-            <label className="form-label">Date of Birth *</label>
-            <input
-              type="date"
-              className="form-control"
-              name="dateOfBirth"
-              value={formData.dateOfBirth}
-              onChange={handleInputChange}
-              required
-            />
+            <label className="form-label">Marital Status</label>
+            <select name="maritalStatus" className="form-select"
+              value={formData.maritalStatus} onChange={handleInputChange}>
+              <option value="">Select</option>
+              <option value="single">Single</option>
+              <option value="married">Married</option>
+              <option value="divorced">Divorced</option>
+              <option value="widowed">Widowed</option>
+            </select>
           </div>
+
+         
           <div className="col-md-4 mb-3">
             <label className="form-label">Gender *</label>
             <select
@@ -207,7 +240,18 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
         </div>
 
         <div className="row">
-          <div className="col-md-6 mb-3">
+           <div className="col-md-4 mb-3">
+            <label className="form-label">Date of Birth *</label>
+            <input
+              type="date"
+              className="form-control"
+              name="dateOfBirth"
+              value={formData.dateOfBirth}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="col-md-4 mb-3">
             <label className="form-label">
               <Mail size={16} className="me-1" />
               Email *
@@ -221,7 +265,7 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
               required
             />
           </div>
-          <div className="col-md-6 mb-3">
+          <div className="col-md-4 mb-3">
             <label className="form-label">
               <Phone size={16} className="me-1" />
               Phone *
@@ -237,21 +281,60 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
           </div>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">
-            <MapPin size={16} className="me-1" />
-            Address
-          </label>
-          <textarea
-            className="form-control"
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            rows={2}
-          />
-        </div>
-
         <div className="row">
+          <div className="col-md-4 mb-3">
+            <label className="form-label">Alternate Number</label>
+            <input
+              type="text"
+              className="form-control"
+              name="altphone"
+              value={formData.altphone}
+              onChange={handleInputChange}
+            />
+          </div>
+           <div className="col-md-4 mb-3">
+            <label className="form-label">Aniversary Date</label>
+            <input
+              type="date"
+              className="form-control"
+              name="anniversarydate"
+              value={formData.anniversarydate}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="col-md-4 mb-3">
+            <label className="form-label">Adhaar Number</label>
+            <input
+              type="text"
+              className="form-control"
+              name="adhaarNumber"
+              value={formData.adhaarNumber}
+              onChange={handleInputChange}
+            />
+          </div>         
+        </div>
+        <div className="row">
+          
+          <div className="col-md-4 mb-3">
+            <label className="form-label">Pan Number</label>
+            <input
+              type="text"
+              className="form-control"
+              name="panNumber"
+              value={formData.panNumber}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="col-md-4 mb-3">
+            <label className="form-label">Occupation</label>
+            <input
+              type="text"
+              className="form-control"
+              name="occupation"
+              value={formData.occupation}
+              onChange={handleInputChange}
+            />
+          </div>
           <div className="col-md-4 mb-3">
             <label className="form-label">City</label>
             <input
@@ -259,6 +342,19 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
               className="form-control"
               name="city"
               value={formData.city}
+              onChange={handleInputChange}
+            />
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-md-4 mb-3">
+            <label className="form-label">District</label>
+            <input
+              type="text"
+              className="form-control"
+              name="district"
+              value={formData.district}
               onChange={handleInputChange}
             />
           </div>
@@ -283,6 +379,31 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
             />
           </div>
         </div>
+        <div className="row">
+            <div className="col-md-6 mb-3">
+              <label className="form-label">
+                <MapPin size={16} className="me-1" />
+                Address
+              </label>
+              <textarea
+                className="form-control"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                rows={2}
+              />          
+            </div>
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Status</label>
+              <select name="status" className="form-select"
+                value={formData.status} onChange={handleInputChange}>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+        </div>
+         
+
 
         {/* Submit Actions */}
         <div className="d-flex justify-content-end border-top pt-3 mt-4">

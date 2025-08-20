@@ -14,6 +14,8 @@ import { Day2Evaluation } from './components/Evaluation/Day2Evaluation';
 import { ROUTES } from './constants';
 import PlanningDetails from './components/PlanningDetails/PlanningDetails'; // Adjust path as necessary
 import { PatientDetail } from "./components/Patients/PatientDetail";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Import Bootstrap JS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -242,7 +244,13 @@ const AppContent = () => {
 };
 
 const App = () => {
-  return <AppContent />;
+  return (
+   <>
+      {/* Your routes/components */}
+      <ToastContainer position="top-right" autoClose={3000} />
+      <AppContent />
+    </>
+  );
 };
 
 export default App;
