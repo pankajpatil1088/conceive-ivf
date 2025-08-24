@@ -1,183 +1,229 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Search, Plus, Edit, Trash2, Phone, Mail, Calendar, User, Eye, FileText } from 'lucide-react';
+import { Plus, User, Phone, Mail, Search, Download, FileText } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const PlanningDetails = () => {
-  const [patients, setPatients] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState('');
-  const [planningDate, setPlanningDate] = useState('');
-  const [treatmentType, setTreatmentType] = useState('');
-  const [planningNotes, setPlanningNotes] = useState('');
-  const [activeTab, setActiveTab] = useState('all-planning'); // Default to 'all-planning'
+  const [allPatients, setAllPatients] = useState([]);
+  const [planningPatients, setPlanningPatients] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedDropdownPatient, setSelectedDropdownPatient] = useState('');
+  const [activeTab, setActiveTab] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
-    const fetchPatients = async () => {
-      const response = await fetch('https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist');
-      const data = await response.json();
-      setPatients(data);
-    };
-    fetchPatients();
+    fetchAllPatients();
   }, []);
 
-  const handlePatientChange = (event) => {
-    setSelectedPatient(event.target.value);
+  const fetchAllPatients = async () => {
+    const res = await fetch('https://687a64bcabb83744b7eca95c.mockapi.io/IVFApp/patientlist');
+    const data = await res.json();
+    setAllPatients(data);
   };
 
-  const handlePlanningDateChange = (event) => {
-    setPlanningDate(event.target.value);
+  const handleAddSelectedPatient = () => {
+    if (!selectedDropdownPatient) return;
+    const exists = planningPatients.find(p => p.id === selectedDropdownPatient);
+    if (!exists) {
+      const patient = allPatients.find(p => p.id === selectedDropdownPatient);
+      if (patient) {
+        setPlanningPatients(prev => [patient, ...prev]);
+      }
+    }
+    setShowAddModal(false);
+    setSelectedDropdownPatient('');
   };
 
-  const handleTreatmentChange = (event) => {
-    setTreatmentType(event.target.value);
+  const clearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
   };
 
-  const handleNotesChange = (event) => {
-    setPlanningNotes(event.target.value);
+  const exportToExcel = () => {
+    const exportData = planningPatients.map(patient => ({
+      'Name': `${patient.firstName} ${patient.lastName}`,
+      'Phone': patient.phone,
+      'Email': patient.email,
+      'Doctor': patient.doctor,
+      'Status': patient.status
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'PlanningPatients');
+    XLSX.writeFile(workbook, `planning_patients_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
-  const handleSave = () => {
-    alert(`Planning details saved for patient ${selectedPatient}`);
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Planning Patients Report', 14, 22);
+    doc.setFontSize(11);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+    const rows = planningPatients.map(patient => [
+      `${patient.firstName} ${patient.lastName}`,
+      patient.phone,
+      patient.email,
+      patient.doctor,
+      patient.status,
+    ]);
+
+    doc.autoTable({
+      head: [['Name', 'Phone', 'Email', 'Doctor', 'Status']],
+      body: rows,
+      startY: 40,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [13, 110, 253], textColor: 255 },
+      alternateRowStyles: { fillColor: [248, 249, 250] }
+    });
+
+    doc.save(`planning_patients_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
+  const renderTable = () => {
+    const filtered = planningPatients.filter((p) => {
+      const matchesTab = activeTab === 'all' || p.status?.toLowerCase() === 'active';
+      const matchesStatus = statusFilter === 'all' || p.status?.toLowerCase() === statusFilter.toLowerCase();
+      const matchesSearch =
+        p.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.phone.includes(searchTerm);
+      return matchesTab && matchesStatus && matchesSearch;
+    });
 
-  const renderPatientsList = (status) => {
-    return patients
-      .filter(patient => status === 'all' || patient.status === status)
-      .map(patient => (
-        <tr key={patient.id}>
-          <td>{patient.firstName} {patient.lastName}</td>
-          <td>{patient.status}</td>
-        </tr>
-      ));
+    return (
+      <table className="table table-hover">
+        <thead className="table-light">
+          <tr>
+            <th>Patient Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Doctor</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.length === 0 ? (
+            <tr><td colSpan="5" className="text-center">No patients found</td></tr>
+          ) : (
+            filtered.map((p) => (
+              <tr key={p.id}>
+                <td><User size={14} className="me-1 text-muted" /> {p.firstName} {p.lastName}</td>
+                <td><Phone size={14} className="me-1 text-muted" /> {p.phone}</td>
+                <td><Mail size={14} className="me-1 text-muted" /> {p.email}</td>
+                <td>{p.doctor}</td>
+                <td>
+                  <span className={`badge ${p.status?.toLowerCase() === 'active' ? 'bg-success' : 'bg-secondary'}`}>
+                    {p.status || 'N/A'}
+                  </span>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    );
   };
 
   return (
-    <div className="planning-details">
-      {/* Planning Form Section */}
-      <div className="form-section">
-        <div className="form-group">
-          <label>Patient: *</label>
-          <select
-            className="form-control"
-            value={selectedPatient}
-            onChange={handlePatientChange}
-          >
-            <option value="">Select Patient</option>
-            {patients.map((patient) => (
-              <option key={patient.id} value={patient.id}>
-                {patient.firstName} {patient.lastName}
-              </option>
-            ))}
-          </select>
+    <div className="planning-details container py-4">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4 className="fw-bold d-flex align-items-center">
+          <User className="me-2" /> Planning Details
+        </h4>
+        <div className="d-flex gap-2">
+          <div className="dropdown">
+            <button className="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <Download size={16} className="me-1" /> Export Data
+            </button>
+            <ul className="dropdown-menu">
+              <li><button className="dropdown-item" onClick={exportToExcel}><FileText size={14} className="me-2" /> Export to Excel</button></li>
+              <li><button className="dropdown-item" onClick={exportToPDF}><FileText size={14} className="me-2" /> Export to PDF</button></li>
+            </ul>
+          </div>
+          <button className="btn btn-primary d-flex align-items-center" onClick={() => setShowAddModal(true)}>
+            <Plus size={16} className="me-1" /> Add New Patient
+          </button>
         </div>
+      </div>
 
-        <div className="form-group">
-          <label>Planning Date: *</label>
+      {/* Filters */}
+      <div className="d-flex gap-2 mb-3">
+        <div className="input-group flex-grow-1">
+          <span className="input-group-text"><Search size={16} /></span>
           <input
-            type="date"
+            type="text"
             className="form-control"
-            value={planningDate}
-            onChange={handlePlanningDateChange}
+            placeholder="Search patients by name, email, or doctor..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
-        <div className="form-group">
-          <label>Treatment Type: *</label>
-          <select
-            className="form-control"
-            value={treatmentType}
-            onChange={handleTreatmentChange}
-          >
-            <option value="">Select Treatment Type</option>
-            <option value="IVF">IVF (In Vitro Fertilization)</option>
-            <option value="IUI">IUI (Intrauterine Insemination)</option>
-            <option value="ICSI">ICSI (Intracytoplasmic Sperm Injection)</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Planning Notes:</label>
-          <textarea
-            className="form-control"
-            value={planningNotes}
-            onChange={handleNotesChange}
-            placeholder="Enter planning and preparation notes..."
-          />
-        </div>
-
-        <div className="d-flex justify-content-end mt-4">
-          <button
-            type="button"
-            className="btn btn-secondary me-2"
-            onClick={() => {
-              setSelectedPatient('');
-              setPlanningDate('');
-              setTreatmentType('');
-              setPlanningNotes('');
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleSave}
-          >
-            Save
-          </button>
-        </div>
+        <select
+          className="form-select w-auto"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <button className="btn btn-outline-secondary" onClick={clearFilters}>
+          Clear Filters
+        </button>
       </div>
 
-      {/* Tabs below the save button */}
-      <div className="patients-tabs mb-4 border-top pt-4 mt-4 d-flex gap-4">
-        <div
-          className={`tab-item ${activeTab === 'all-planning' ? 'active' : ''}`}
-          onClick={() => handleTabChange('all-planning')}
+      {/* Tabs */}
+      <div className="nav nav-tabs mb-3">
+        <button
+          className={`nav-link ${activeTab === 'all' ? 'active' : ''}`}
+          onClick={() => setActiveTab('all')}
         >
-          All Patient Planning
-        </div>
-        <div
-          className={`tab-item ${activeTab === 'active-planning' ? 'active' : ''}`}
-          onClick={() => handleTabChange('active-planning')}
+          All Planning
+        </button>
+        <button
+          className={`nav-link ${activeTab === 'active' ? 'active' : ''}`}
+          onClick={() => setActiveTab('active')}
         >
-          Active Planning Patient
-        </div>
+          Active Planning
+        </button>
       </div>
 
-      {/* Tab Content */}
-      {activeTab === 'all-planning' && (
-        <div>
-          <h5>All Patient Planning</h5>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Patient Name</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {renderPatientsList('all')}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {renderTable()}
 
-      {activeTab === 'active-planning' && (
-        <div>
-          <h5>Active Planning Patients</h5>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Patient Name</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {renderPatientsList('active')}
-            </tbody>
-          </table>
+      {/* Modal */}
+      {showAddModal && (
+        <div className="modal d-block" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Select Patient</h5>
+                <button type="button" className="btn-close" onClick={() => setShowAddModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <select
+                  className="form-select"
+                  value={selectedDropdownPatient}
+                  onChange={(e) => setSelectedDropdownPatient(e.target.value)}
+                >
+                  <option value="">Select Patient</option>
+                  {allPatients.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.firstName} {p.lastName} ({p.phone})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowAddModal(false)}>Cancel</button>
+                <button className="btn btn-primary" onClick={handleAddSelectedPatient}>Add</button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
