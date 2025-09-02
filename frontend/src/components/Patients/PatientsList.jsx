@@ -369,14 +369,14 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
           <table className="table table-hover patients-table">
             <thead>
               <tr>
-                <th>
+                {/* <th>
                   <input
                     type="checkbox"
                     className="form-check-input"
                     checked={selectedPatients.length === filteredPatients.length && filteredPatients.length > 0}
                     onChange={handleSelectAll}
                   />
-                </th>
+                </th> */}
                 <th>Patient Name</th>
                 <th>Contact Information</th>
                 <th>Registration Date</th>
@@ -404,14 +404,14 @@ export const PatientsList = ({ patients = [], onAddPatient, onEditPatient, onDel
               ) : (
                 filteredPatients.map((patient) => (
                   <tr key={patient.id} className={selectedPatients.includes(patient.id) ? 'table-active' : ''}>
-                    <td>
+                    {/* <td>
                       <input
                         type="checkbox"
                         className="form-check-input"
                         checked={selectedPatients.includes(patient.id)}
                         onChange={() => handleSelectPatient(patient.id)}
                       />
-                    </td>
+                    </td> */}
                     <td>
                       <div className="patient-info">
                         <div className="patient-name">{patient.firstName}</div>

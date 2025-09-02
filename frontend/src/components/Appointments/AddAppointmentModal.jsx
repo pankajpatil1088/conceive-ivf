@@ -112,7 +112,7 @@ const handleSubmit = async (e) => {
   ];
 
   const doctors = [
-    'Dr. Chetan Rao',
+    'Dr. Madhuri Roy',
     'Dr. Johnson',
     'Dr. Brown',
     'Dr. Wilson',

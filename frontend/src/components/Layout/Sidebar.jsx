@@ -22,14 +22,16 @@ import { ROUTES } from '../../constants';
 
 const menuItems = [
   { id: 'dashboard', icon: Home, label: 'Dashboard', path: ROUTES.DASHBOARD },
-  { id: 'patients', icon: Users, label: 'Patients', path: ROUTES.PATIENTS },
-  // { id: 'register', icon: UserPlus, label: 'New Patient', path: ROUTES.REGISTER },
+  
   { id: 'appointments', icon: Calendar, label: 'Appointments', path: ROUTES.APPOINTMENTS },
-  { id: 'day2-evaluation', icon: FileText, label: 'Day 2 Evaluation', path: ROUTES.DAY2_EVALUATION },
-  { id: 'reports', icon: FileText, label: 'Reports', path: ROUTES.REPORTS },
-  { id: 'analytics', icon: BarChart3, label: 'Analytics', path: ROUTES.ANALYTICS },
-  { id: 'settings', icon: Settings, label: 'Settings', path: ROUTES.SETTINGS },
-  { id: 'planning-details', icon: Calendar, label: 'Planning Details', path: '/planning-details' }, // New item
+  { id: 'patients', icon: Users, label: 'Patients', path: ROUTES.PATIENTS },
+
+  { id: 'planning-details', icon: Calendar, label: 'Planning Details', path: ROUTES.PLANNING_DETAILS },
+  // { id: 'register', icon: UserPlus, label: 'New Patient', path: ROUTES.REGISTER },
+  // { id: 'day2-evaluation', icon: FileText, label: 'Day 2 Evaluation', path: ROUTES.DAY2_EVALUATION },
+  // { id: 'reports', icon: FileText, label: 'Reports', path: ROUTES.REPORTS },
+  // { id: 'analytics', icon: BarChart3, label: 'Analytics', path: ROUTES.ANALYTICS },
+  // { id: 'settings', icon: Settings, label: 'Settings', path: ROUTES.SETTINGS },
 ];
 
 export const Sidebar = ({

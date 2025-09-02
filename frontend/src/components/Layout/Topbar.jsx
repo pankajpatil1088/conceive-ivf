@@ -108,7 +108,7 @@ export const Topbar = ({
             </div>
           </div>
 
-          <div className="dropdown notification-dropdown">
+          {/* <div className="dropdown notification-dropdown">
             <button 
               className="btn btn-outline-secondary btn-sm position-relative"
               type="button"
@@ -189,7 +189,7 @@ export const Topbar = ({
                 </div>
               )}
             </div>
-          </div>
+          </div> */}
 
           <div className="dropdown user-menu">
             <button
@@ -210,12 +210,12 @@ export const Topbar = ({
                   Profile
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <button className="dropdown-item" onClick={onThemeConfig}>
                   <Palette size={16} className="me-2" />
                   Theme Settings
                 </button>
-              </li>
+              </li> */}
               <li>
                 <a className="dropdown-item" href="#">
                   <Settings size={16} className="me-2" />

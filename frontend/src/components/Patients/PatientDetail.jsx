@@ -68,7 +68,7 @@ export const PatientDetail = () => {
   if (!patient) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className="container py-2">
+    <div className="py-2">
       {/* Back */}
       <button className="btn btn-link mb-3" onClick={() => navigate(-1)}>
         <ArrowLeft size={18} className="me-2" /> Back
