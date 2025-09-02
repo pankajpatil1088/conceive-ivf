@@ -43,47 +43,45 @@ export const AddPatientModal = ({ onClose, onSave, initialData }) => {
 
   // ✅ Pre-fill form when editing
   useEffect(() => {
-    if (initialData) {
-      const [firstName, ...lastNameParts] = (initialData.name || '').split(' ');
-      setFormData({
-        ...formData,
-        firstName: firstName || '',
-        lastName: lastNameParts.join(' ') || '',
-        dateOfBirth: initialData.dateOfBirth || '',
-        gender: initialData.gender || '',
-        email: initialData.email || '',
-        phone: initialData.phone || '',
-        maritalStatus: initialData.maritalStatus || '',
-        adhaarNumber: initialData.adhaarNumber || '',
-        panNumber: initialData.panNumber || '',
-        occupation: initialData.occupation || '',
-        middleName: initialData.middleName || '',
-        address: initialData.address || '',
-        city: initialData.city || '',
-        district: initialData.district || '',
-        altphone: initialData.altphone || '',
-        anniversarydate: initialData.anniversarydate || '',
-        state: initialData.state || '',
-        zipCode: initialData.zipCode || '',
-        bloodGroup: initialData.bloodGroup || '',
-        allergies: initialData.allergies || '',
-        currentMedications: initialData.currentMedications || '',
-        previousSurgeries: initialData.previousSurgeries || '',
-        reasonForTreatment: initialData.reasonForTreatment || '',
-        previousIVFAttempts: initialData.previousIVFAttempts || '',
-        partnerAge: initialData.partnerAge || '',
-        menstrualCycle: initialData.menstrualCycle || '',
-        lastMenstrualPeriod: initialData.lastMenstrualPeriod || '',
-        emergencyName: initialData.emergencyContact?.name || '',
-        emergencyPhone: initialData.emergencyContact?.phone || '',
-        emergencyRelation: initialData.emergencyContact?.relation || '',
-        doctor: initialData.doctor || '',
-        treatmentType: initialData.treatmentType || '',
-        status: initialData.status || 'Active' 
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialData]);
+  if (initialData) {
+    setFormData({
+      firstName: initialData.firstName || '',
+      middleName: initialData.middleName || '',
+      lastName: initialData.lastName || '',
+      maritalStatus: initialData.maritalStatus || '',
+      gender: initialData.gender || '',
+      bloodGroup: initialData.bloodGroup || '',
+      dateOfBirth: initialData.dateOfBirth || '',
+      email: initialData.email || '',
+      phone: initialData.phone || '',
+      city: initialData.city || '',
+      district: initialData.district || '',
+      altphone: initialData.altphone || '',
+      anniversarydate: initialData.anniversarydate || '',
+      state: initialData.state || '',
+      zipCode: initialData.zipCode || '',
+      adhaarNumber: initialData.adhaarNumber || '',
+      panNumber: initialData.panNumber || '',
+      occupation: initialData.occupation || '',
+      address: initialData.address || '',
+      allergies: initialData.allergies || '',
+      currentMedications: initialData.currentMedications || '',
+      previousSurgeries: initialData.previousSurgeries || '',
+      reasonForTreatment: initialData.reasonForTreatment || '',
+      previousIVFAttempts: initialData.previousIVFAttempts || '',
+      partnerAge: initialData.partnerAge || '',
+      menstrualCycle: initialData.menstrualCycle || '',
+      lastMenstrualPeriod: initialData.lastMenstrualPeriod || '',
+      emergencyName: initialData.emergencyContact?.name || '',
+      emergencyPhone: initialData.emergencyContact?.phone || '',
+      emergencyRelation: initialData.emergencyContact?.relation || '',
+      doctor: initialData.doctor || '',
+      treatmentType: initialData.treatmentType || '',
+      status: initialData.status || 'Active',
+    });
+  }
+}, [initialData]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
